@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../main.dart';
 import '../widgets/custom_bottom_nav.dart';
@@ -52,17 +53,15 @@ class _MainScreenState extends State<MainScreen> {
     if (selectedIndex == 0) {
       return HomeContent(
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+        onChangeTab: onTabChange, // <- kirim fungsi untuk ganti tab
       );
     }
-
     if (selectedIndex == 1) {
-      return const Center(child: Text('Menu'));
+      return const Center(child: Text('Halaman Menu (semua fitur)'));
     }
-
     if (selectedIndex == 2) {
-      return const Center(child: Text('Riwayat Aktivitas'));
+      return const Center(child: Text('Halaman Riwayat Lengkap'));
     }
-
     return const Center(child: Text('Profile & Setting'));
   }
 
@@ -88,12 +87,14 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
+// ==================== DRAWER ====================
 class AttendanceDrawer extends StatelessWidget {
   const AttendanceDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
     final menuItems = [
+      'Absen',
       'Lembur',
       'Outpass',
       'Cuti',
@@ -108,28 +109,55 @@ class AttendanceDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
               child: Text(
                 'Menu Aplikasi',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            const Divider(height: 1),
-            ExpansionTile(
-              leading: const Icon(Icons.assignment_ind_outlined),
-              title: const Text(
-                'Absen',
-                style: TextStyle(fontWeight: FontWeight.w600),
+            const Divider(height: 1, thickness: 1),
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: menuItems.length,
+                separatorBuilder: (_, __) => const Divider(height: 0, indent: 56),
+                itemBuilder: (context, index) {
+                  final item = menuItems[index];
+                  IconData icon;
+                  switch (item) {
+                    case 'Absen':
+                      icon = Icons.fingerprint;
+                      break;
+                    case 'Lembur':
+                      icon = Icons.access_time;
+                      break;
+                    case 'Outpass':
+                      icon = Icons.exit_to_app;
+                      break;
+                    case 'Cuti':
+                      icon = Icons.beach_access;
+                      break;
+                    case 'DC':
+                      icon = Icons.business_center;
+                      break;
+                    case 'Dinas':
+                      icon = Icons.work_outline;
+                      break;
+                    default:
+                      icon = Icons.history;
+                  }
+                  return ListTile(
+                    leading: Icon(icon, color: const Color.fromARGB(255, 185, 26, 26)),
+                    title: Text(item, style: const TextStyle(fontWeight: FontWeight.w500)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Menu $item ditekan')),
+                      );
+                    },
+                  );
+                },
               ),
-              children: menuItems
-                  .map(
-                    (item) => ListTile(
-                      contentPadding: const EdgeInsets.only(left: 56, right: 16),
-                      title: Text(item),
-                      onTap: () => Navigator.pop(context),
-                    ),
-                  )
-                  .toList(),
             ),
           ],
         ),
@@ -138,87 +166,42 @@ class AttendanceDrawer extends StatelessWidget {
   }
 }
 
+// ==================== HOME CONTENT ====================
 class HomeContent extends StatelessWidget {
   final VoidCallback onMenuTap;
+  final Function(int) onChangeTab; // untuk berpindah tab bottom nav
 
-  const HomeContent({super.key, required this.onMenuTap});
+  const HomeContent({
+    super.key,
+    required this.onMenuTap,
+    required this.onChangeTab,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 110,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
+            // ----- HEADER: burger di kiri -----
             Row(
               children: [
-                _CircleButton(
-                  icon: Icons.menu,
-                  onTap: onMenuTap,
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: onMenuTap,
+                  iconSize: 28,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE9ECEF),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.image_outlined,
-                          color: Color(0xFF6C757D),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Logo Perusahaan',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              'Absensi Harian Karyawan',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Color(0xFF6C757D),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const _CircleButton(icon: Icons.search),
+                const Spacer(),
               ],
             ),
             const SizedBox(height: 16),
+
+            // ----- BANNER -----
             Container(
               width: double.infinity,
-              height: 170,
+              height: 190,
               decoration: BoxDecoration(
                 color: const Color(0xFFD9D9D9),
                 borderRadius: BorderRadius.circular(16),
@@ -226,41 +209,69 @@ class HomeContent extends StatelessWidget {
               child: const Center(
                 child: Text(
                   'Banner Informasi / Pengumuman',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF6C757D),
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF6C757D)),
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
+
+            // ----- GRID MENU (4 menu) -----
             const Text(
-              'Info Absensi Hari Ini',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              'Menu Cepat',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            const SizedBox(height: 10),
-            const _InfoCard(
-              icon: Icons.schedule_outlined,
-              title: 'Jam Masuk',
-              subtitle: '07:30 - 08:00 WIB',
+            const SizedBox(height: 12),
+            GridView.count(
+              crossAxisCount: 4,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              children: [
+                _MenuItem(
+                  icon: Icons.qr_code_scanner,
+                  label: 'Absen',
+                  onTap: () => onChangeTab(0), // pindah ke tab Home? Atau buka scan? Biarkan snackbar dulu
+                ),
+                _MenuItem(
+                  icon: Icons.access_time,
+                  label: 'Lembur',
+                  onTap: () => onChangeTab(1), // pindah ke Menu
+                ),
+                _MenuItem(
+                  icon: Icons.beach_access,
+                  label: 'Cuti',
+                  onTap: () => onChangeTab(1),
+                ),
+                _MenuItem(
+                  icon: Icons.more_horiz,
+                  label: 'Lainnya',
+                  onTap: () => onChangeTab(1), // pindah ke Menu (index 1)
+                ),
+              ],
+            ),
+            const SizedBox(height: 22),
+
+            // ----- RIWAYAT ABSENSI -----
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Riwayat Absensi',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                TextButton(
+                  onPressed: () => onChangeTab(2), // pindah ke Riwayat (index 2)
+                  child: const Text('See more'),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
-            const _InfoCard(
-              icon: Icons.logout_outlined,
-              title: 'Jam Pulang',
-              subtitle: '16:30 WIB',
-            ),
-            const SizedBox(height: 8),
-            const _InfoCard(
-              icon: Icons.location_on_outlined,
-              title: 'Aturan Lokasi',
-              subtitle: 'Pastikan GPS aktif dan berada dalam radius kantor.',
-            ),
-            const SizedBox(height: 8),
-            const _InfoCard(
-              icon: Icons.verified_user_outlined,
-              title: 'Validasi Wajah',
-              subtitle: 'Gunakan pencahayaan cukup agar verifikasi lebih cepat.',
+            Column(
+              children: List.generate(
+                _dummyRiwayat.length,
+                (index) => _RiwayatItem(riwayat: _dummyRiwayat[index]),
+              ),
             ),
           ],
         ),
@@ -269,85 +280,73 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-class _CircleButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback? onTap;
+// Data dummy riwayat
+final List<Map<String, String>> _dummyRiwayat = [
+  {'tanggal': 'Senin, 5 Apr 2026', 'status': 'Masuk 07:45', 'keterangan': 'On time'},
+  {'tanggal': 'Selasa, 6 Apr 2026', 'status': 'Masuk 08:10', 'keterangan': 'Terlambat 10 menit'},
+  {'tanggal': 'Rabu, 7 Apr 2026', 'status': 'Pulang 16:30', 'keterangan': 'Tepat waktu'},
+  {'tanggal': 'Kamis, 8 Apr 2026', 'status': 'Masuk 07:50', 'keterangan': 'On time'},
+];
 
-  const _CircleButton({required this.icon, this.onTap});
+class _MenuItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _MenuItem({required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFF1F3F5),
-      shape: const CircleBorder(),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(11),
-          child: Icon(icon, color: const Color(0xFF495057)),
-        ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 185, 26, 26).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, color: const Color.fromARGB(255, 185, 26, 26), size: 28),
+          ),
+          const SizedBox(height: 6),
+          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+        ],
       ),
     );
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
+class _RiwayatItem extends StatelessWidget {
+  final Map<String, String> riwayat;
 
-  const _InfoCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
+  const _RiwayatItem({required this.riwayat});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE9ECEF)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 36,
-            width: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF1F1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: const Color.fromARGB(255, 185, 26, 26)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF6C757D),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+    return Card(
+      margin: const EdgeInsets.only(bottom: 6), // kurangi jarak antar card
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 0,
+      color: Colors.grey.shade50,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2), // padding lebih kecil
+        leading: CircleAvatar(
+          radius: 14, // avatar lebih kecil
+          backgroundColor: const Color.fromARGB(255, 185, 26, 26).withOpacity(0.2),
+          child: const Icon(Icons.history, color: Color.fromARGB(255, 185, 26, 26), size: 14),
+        ),
+        title: Text(
+          riwayat['tanggal']!,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500), // lebih kecil
+        ),
+        subtitle: Text(
+          '${riwayat['status']} - ${riwayat['keterangan']}',
+          style: const TextStyle(fontSize: 12), // lebih kecil
+        ),
+        trailing: const Icon(Icons.chevron_right, size: 16),
       ),
     );
   }

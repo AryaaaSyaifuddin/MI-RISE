@@ -212,14 +212,14 @@ class _ScanBottomSheetState extends State<ScanBottomSheet> {
                         "Waktu",
                         style: TextStyle(
                           color: Colors.grey,
-                          fontSize: 13,
+                          fontSize: 11,
                         ),
                       ),
                       Text(
                         TimeOfDay.now().format(context),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -236,7 +236,7 @@ class _ScanBottomSheetState extends State<ScanBottomSheet> {
                         child: Text(
                           "Pastikan wajah terlihat jelas dan berada di dalam frame",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 10,
                             color: Colors.grey,
                           ),
                         ),
@@ -269,7 +269,7 @@ class _ScanBottomSheetState extends State<ScanBottomSheet> {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -287,3 +287,4 @@ class _ScanBottomSheetState extends State<ScanBottomSheet> {
     );
   }
 }
+
