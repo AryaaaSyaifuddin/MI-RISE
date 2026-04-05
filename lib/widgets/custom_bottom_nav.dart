@@ -48,7 +48,7 @@ class CustomBottomNav extends StatelessWidget {
             buildItem(Icons.home_outlined, "Home", 0),
             buildItem(Icons.dashboard_outlined, "Menu", 1),
 
-            SizedBox(width: 30), // space FAB (SCAN)
+            SizedBox(width: 45), // space FAB (SCAN)
 
             buildItem(Icons.history, "Riwayat", 2),
             buildItem(Icons.person_outline, "Profile", 3),

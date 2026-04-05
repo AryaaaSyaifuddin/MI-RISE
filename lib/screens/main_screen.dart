@@ -6,6 +6,8 @@ import '../main.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../widgets/scan_bottom_sheet.dart';
 
+import 'menu_screen.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -57,7 +59,7 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
     if (selectedIndex == 1) {
-      return const Center(child: Text('Halaman Menu (semua fitur)'));
+      return const MenuScreen(); // <-- ganti ini
     }
     if (selectedIndex == 2) {
       return const Center(child: Text('Halaman Riwayat Lengkap'));
@@ -67,25 +69,30 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      extendBody: true,
-      body: _buildPage(),
-      drawer: const AttendanceDrawer(),
-      bottomNavigationBar: CustomBottomNav(
-        selectedIndex: selectedIndex,
-        onTap: onTabChange,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: GoogleFonts.openSansTextTheme(Theme.of(context).textTheme),
       ),
-      floatingActionButton: Transform.translate(
-        offset: const Offset(0, 6),
-        child: FloatingActionButton(
-          onPressed: onScanPressed,
-          backgroundColor: const Color(0xFFB91A1A),
-          foregroundColor: Colors.white,
-          child: const Icon(Icons.qr_code_scanner),
+      child: Scaffold(
+        key: _scaffoldKey,
+        extendBody: true,
+        body: _buildPage(),
+        drawer: const AttendanceDrawer(),
+        bottomNavigationBar: CustomBottomNav(
+          selectedIndex: selectedIndex,
+          onTap: onTabChange,
         ),
+        floatingActionButton: Transform.translate(
+          offset: const Offset(0, 6),
+          child: FloatingActionButton(
+            onPressed: onScanPressed,
+            backgroundColor: const Color(0xFFB91A1A),
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.qr_code_scanner),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
@@ -103,7 +110,7 @@ class AttendanceDrawer extends StatelessWidget {
       'Cuti',
       'DC',
       'Dinas',
-      'User Activity',
+      'Riwayat Aktivitas',
     ];
 
     return Drawer(
@@ -113,17 +120,17 @@ class AttendanceDrawer extends StatelessWidget {
           children: [
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
-              child: Text(
-                'Menu Aplikasi',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              child: Center(
+                child: Image(
+                  image: AssetImage('assets/images/logo.png'),
+                  height: 50,
+                ),
               ),
             ),
-            const Divider(height: 1, thickness: 1),
             Expanded(
-              child: ListView.separated(
+              child: ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 itemCount: menuItems.length,
-                separatorBuilder: (_, __) => const Divider(height: 0, indent: 56),
                 itemBuilder: (context, index) {
                   final item = menuItems[index];
                   IconData icon;
@@ -151,7 +158,10 @@ class AttendanceDrawer extends StatelessWidget {
                   }
                   return ListTile(
                     leading: Icon(icon, color: const Color(0xFFB91A1A)),
-                    title: Text(item, style: const TextStyle(fontWeight: FontWeight.w500)),
+                    title: Text(
+                      item,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -267,7 +277,7 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(width: 48), // seukuran IconButton untuk keseimbangan
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             // ----- BANNER INFORMASI MODERN (Tema Merah) -----
             Container(
@@ -352,10 +362,10 @@ class _HomeContentState extends State<HomeContent> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.2),
+                              color: const Color.fromARGB(255, 161, 161, 161).withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.check_circle, color: Colors.green, size: 22),
+                            child: const Icon(Icons.priority_high, color: Colors.white, size: 22),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -407,7 +417,7 @@ class _HomeContentState extends State<HomeContent> {
                             icon: Icons.schedule,
                             label: 'Jam Masuk',
                             value: _checkInTime,
-                            color: Colors.blue,
+                            color: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -416,7 +426,7 @@ class _HomeContentState extends State<HomeContent> {
                             icon: Icons.logout,
                             label: 'Jam Pulang',
                             value: _checkOutTime,
-                            color: Colors.orange,
+                            color: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                       ],
