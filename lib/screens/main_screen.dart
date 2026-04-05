@@ -7,6 +7,7 @@ import '../widgets/custom_bottom_nav.dart';
 import '../widgets/scan_bottom_sheet.dart';
 
 import 'menu_screen.dart';
+import 'riwayat_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -59,10 +60,10 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
     if (selectedIndex == 1) {
-      return const MenuScreen(); // <-- ganti ini
+      return const MenuScreen();
     }
     if (selectedIndex == 2) {
-      return const Center(child: Text('Halaman Riwayat Lengkap'));
+      return const RiwayatScreen();
     }
     return const Center(child: Text('Profile & Setting'));
   }
@@ -108,7 +109,7 @@ class AttendanceDrawer extends StatelessWidget {
       'Lembur',
       'Outpass',
       'Cuti',
-      'DC',
+      'Izin',
       'Dinas',
       'Riwayat Aktivitas',
     ];
@@ -147,7 +148,7 @@ class AttendanceDrawer extends StatelessWidget {
                     case 'Cuti':
                       icon = Icons.beach_access;
                       break;
-                    case 'DC':
+                    case 'Izin':
                       icon = Icons.business_center;
                       break;
                     case 'Dinas':
@@ -195,14 +196,16 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  // Data absensi (dapat diupdate dari proses scan)
+  // Data absensi
   String _checkInTime = '-- : --';
   String _checkOutTime = '-- : --';
   String _attendanceStatus = 'Belum absen';
   String _attendanceLabel = '';
-  bool _isInsideRadius = true; // asumsikan dalam radius, nanti diupdate dari GPS
 
-  // Fungsi untuk update setelah absen masuk (contoh dipanggil dari scan)
+  // Status foto profil (false = pakai anonym.png, true = pakai foto asli)
+  bool _hasProfilePhoto = false; // Ganti jadi true untuk simulasi sudah upload
+
+  // Fungsi update absen
   void updateCheckIn(String time, bool onTime) {
     setState(() {
       _checkInTime = time;
@@ -211,29 +214,19 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
-  // Fungsi untuk update setelah absen pulang
   void updateCheckOut(String time) {
     setState(() {
       _checkOutTime = time;
     });
   }
 
-  // Fungsi untuk update status lokasi (dipanggil dari GPS)
-  void updateLocationStatus(bool inside) {
-    setState(() {
-      _isInsideRadius = inside;
-    });
-  }
-
   // Helper date/time
-  String _getDayName() {
+  String _getDayAndDate() {
     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    return days[DateTime.now().weekday % 7];
-  }
-
-  String _getFormattedDate() {
     final now = DateTime.now();
-    return '${now.day} ${_getMonthName(now.month)} ${now.year}';
+    final dayName = days[now.weekday % 7];
+    final date = '${now.day} ${_getMonthName(now.month)} ${now.year}';
+    return '$dayName, $date';
   }
 
   String _getMonthName(int month) {
@@ -252,13 +245,11 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ----- HEADER: burger di kiri -----
-            Row(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.menu),
@@ -273,234 +264,234 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                   ),
                 ),
-                // Kosongkan sisi kanan agar logo benar-benar di tengah
-                const SizedBox(width: 48), // seukuran IconButton untuk keseimbangan
+                const SizedBox(width: 48),
               ],
             ),
-            const SizedBox(height: 12),
-
-            // ----- BANNER INFORMASI MODERN (Tema Merah) -----
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFB91A1A), Color(0xFFD92D2D)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header: Hari, Tanggal, Jam
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _getDayName(),
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 13,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _getFormattedDate(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.access_time, color: Colors.white70, size: 16),
-                              const SizedBox(width: 6),
-                              Text(
-                                _getCurrentTime(),
-                                style: const TextStyle(color: Colors.white, fontSize: 14),
-                              ),
-                            ],
-                          ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // BANNER INFORMASI dengan Foto Profil di Kiri
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFB91A1A), Color(0xFFD92D2D)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-
-                    // Status Absen Hari Ini
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 161, 161, 161).withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
+                          // Foto Profil (kiri)
+                          GestureDetector(
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    _hasProfilePhoto
+                                        ? 'Foto profil sudah terdaftar'
+                                        : 'Silakan upload foto untuk absensi wajah',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.white.withOpacity(0.3),
+                              backgroundImage: _hasProfilePhoto
+                                  ? const AssetImage('assets/images/profile.jpg') as ImageProvider?
+                                  : const AssetImage('assets/images/anonym.png'),
+                              child: _hasProfilePhoto ? null : null,
                             ),
-                            child: const Icon(Icons.priority_high, color: Colors.white, size: 22),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 16),
+                          // Informasi lainnya (kanan)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Status Hari Ini',
-                                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                                // Baris 1: Hari, Tanggal (gabung) & Jam
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _getDayAndDate(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.access_time, color: Colors.white70, size: 12),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            _getCurrentTime(),
+                                            style: const TextStyle(color: Colors.white, fontSize: 11),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _attendanceStatus,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                const SizedBox(height: 12),
+                                // Status absen (diringkas)
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(Icons.priority_high, color: Colors.white, size: 16),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        _attendanceStatus,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (_attendanceLabel.isNotEmpty)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          _attendanceLabel,
+                                          style: const TextStyle(
+                                            color: Colors.orange,
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
+                                const SizedBox(height: 10),
+                                // Jam Masuk & Pulang (satu baris)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _CompactInfoTile(
+                                        icon: Icons.schedule,
+                                        label: 'Masuk',
+                                        value: _checkInTime,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _CompactInfoTile(
+                                        icon: Icons.logout,
+                                        label: 'Pulang',
+                                        value: _checkOutTime,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // Lokasi sudah dihapus sesuai permintaan
                               ],
                             ),
                           ),
-                          if (_attendanceLabel.isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                _attendanceLabel,
-                                style: const TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-
-                    // Jam Masuk & Jam Pulang
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _InfoTile(
-                            icon: Icons.schedule,
-                            label: 'Jam Masuk',
-                            value: _checkInTime,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _InfoTile(
-                            icon: Icons.logout,
-                            label: 'Jam Pulang',
-                            value: _checkOutTime,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                      ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Menu Cepat (Grid 4 menu)
+                  const Text(
+                    'Menu Cepat',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.count(
+                    crossAxisCount: 4,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    children: [
+                      _MenuItem(
+                        icon: Icons.qr_code_scanner,
+                        label: 'Absen',
+                        onTap: () => widget.onChangeTab(0),
+                      ),
+                      _MenuItem(
+                        icon: Icons.access_time,
+                        label: 'Lembur',
+                        onTap: () => widget.onChangeTab(1),
+                      ),
+                      _MenuItem(
+                        icon: Icons.beach_access,
+                        label: 'Cuti',
+                        onTap: () => widget.onChangeTab(1),
+                      ),
+                      _MenuItem(
+                        icon: Icons.more_horiz,
+                        label: 'Lainnya',
+                        onTap: () => widget.onChangeTab(1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+                  // Riwayat Absensi
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Riwayat Absensi',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      TextButton(
+                        onPressed: () => widget.onChangeTab(2),
+                        child: const Text('See more'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Column(
+                    children: List.generate(
+                      _dummyRiwayat.length,
+                      (index) => _RiwayatItem(riwayat: _dummyRiwayat[index]),
                     ),
-                    const SizedBox(height: 12),
-
-                    // Lokasi Kantor (warna dinamis)
-                    _LocationTile(isInsideRadius: _isInsideRadius),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-
-            // ----- GRID MENU (4 menu) -----
-            const Text(
-              'Menu Cepat',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            GridView.count(
-              crossAxisCount: 4,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              children: [
-                _MenuItem(
-                  icon: Icons.qr_code_scanner,
-                  label: 'Absen',
-                  onTap: () => widget.onChangeTab(0),
-                ),
-                _MenuItem(
-                  icon: Icons.access_time,
-                  label: 'Lembur',
-                  onTap: () => widget.onChangeTab(1),
-                ),
-                _MenuItem(
-                  icon: Icons.beach_access,
-                  label: 'Cuti',
-                  onTap: () => widget.onChangeTab(1),
-                ),
-                _MenuItem(
-                  icon: Icons.more_horiz,
-                  label: 'Lainnya',
-                  onTap: () => widget.onChangeTab(1),
-                ),
-              ],
-            ),
-            const SizedBox(height: 22),
-
-            // ----- RIWAYAT ABSENSI -----
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Riwayat Absensi',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                TextButton(
-                  onPressed: () => widget.onChangeTab(2),
-                  child: const Text('See more'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Column(
-              children: List.generate(
-                _dummyRiwayat.length,
-                (index) => _RiwayatItem(riwayat: _dummyRiwayat[index]),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -579,79 +570,38 @@ class _RiwayatItem extends StatelessWidget {
   }
 }
 
-class _InfoTile extends StatelessWidget {
+class _CompactInfoTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  final Color color;
 
-  const _InfoTile({
+  const _CompactInfoTile({
     required this.icon,
     required this.label,
     required this.value,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 10),
+          Icon(icon, color: Colors.white70, size: 14),
+          const SizedBox(width: 6),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: Colors.white60, fontSize: 11)),
-                const SizedBox(height: 2),
-                Text(value, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+                Text(label, style: const TextStyle(color: Colors.white70, fontSize: 9)),
+                Text(value, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LocationTile extends StatelessWidget {
-  final bool isInsideRadius;
-
-  const _LocationTile({required this.isInsideRadius});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isInsideRadius ? const Color.fromARGB(255, 255, 255, 255) : Colors.red;
-    final statusText = isInsideRadius ? 'Dalam radius' : 'Di luar area kantor';
-    final icon = isInsideRadius ? Icons.gps_fixed : Icons.gps_off;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.location_on, color: color, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Lokasi Kantor', style: TextStyle(color: Colors.white60, fontSize: 11)),
-                const SizedBox(height: 2),
-                Text(statusText, style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w500)),
-              ],
-            ),
-          ),
-          Icon(icon, color: color, size: 16),
         ],
       ),
     );

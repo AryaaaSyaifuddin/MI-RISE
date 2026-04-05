@@ -8,7 +8,7 @@ class MenuScreen extends StatelessWidget {
     {'icon': Icons.access_time, 'label': 'Lembur'},
     {'icon': Icons.exit_to_app, 'label': 'Outpass'},
     {'icon': Icons.beach_access, 'label': 'Cuti'},
-    {'icon': Icons.business_center, 'label': 'DC'},
+    {'icon': Icons.business_center, 'label': 'Izin'},
     {'icon': Icons.work_outline, 'label': 'Dinas'},
     {'icon': Icons.history, 'label': 'Riwayat Aktivitas'},
   ];
@@ -23,15 +23,22 @@ class MenuScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
-              const Text(
-                'Menu Aplikasi',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              const Row(
+                children: [
+                  SizedBox(width: 48),
+                  Expanded(
+                    child: Center(
+                      child: Image(
+                        image: AssetImage('assets/images/logo.png'),
+                        height: 55,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 48),
+                ],
               ),
-              const SizedBox(height: 16),
+              
+              const SizedBox(height: 20),
               GridView.count(
                 crossAxisCount: 4,
                 shrinkWrap: true,
@@ -100,3 +107,4 @@ class _MenuItemGrid extends StatelessWidget {
     );
   }
 }
+
