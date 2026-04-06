@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key});
+  final VoidCallback onAbsenTap;
+
+  const MenuScreen({
+    super.key,
+    required this.onAbsenTap,
+  });
 
   final List<Map<String, dynamic>> menus = const [
     {'icon': Icons.qr_code_scanner, 'label': 'Absen'},
@@ -54,6 +59,11 @@ class MenuScreen extends StatelessWidget {
                     icon: menu['icon'] as IconData,
                     label: menu['label'] as String,
                     onTap: () {
+                      if (menu['label'] == 'Absen') {
+                        onAbsenTap();
+                        return;
+                      }
+
                       // Aksi saat menu diklik
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Menu ${menu['label']} ditekan')),

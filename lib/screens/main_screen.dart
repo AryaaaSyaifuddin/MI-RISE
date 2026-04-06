@@ -58,10 +58,11 @@ class _MainScreenState extends State<MainScreen> {
       return HomeContent(
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         onChangeTab: onTabChange,
+        onAbsenTap: onScanPressed,
       );
     }
     if (selectedIndex == 1) {
-      return const MenuScreen();
+      return MenuScreen(onAbsenTap: onScanPressed);
     }
     if (selectedIndex == 2) {
       return const RiwayatScreen();
@@ -82,7 +83,7 @@ class _MainScreenState extends State<MainScreen> {
         key: _scaffoldKey,
         extendBody: true,
         body: _buildPage(),
-        drawer: const AttendanceDrawer(),
+        drawer: AttendanceDrawer(onAbsenTap: onScanPressed),
         bottomNavigationBar: CustomBottomNav(
           selectedIndex: selectedIndex,
           onTap: onTabChange,
@@ -104,7 +105,12 @@ class _MainScreenState extends State<MainScreen> {
 
 // ==================== DRAWER ====================
 class AttendanceDrawer extends StatelessWidget {
-  const AttendanceDrawer({super.key});
+  final VoidCallback onAbsenTap;
+
+  const AttendanceDrawer({
+    super.key,
+    required this.onAbsenTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +175,13 @@ class AttendanceDrawer extends StatelessWidget {
                     ),
                     onTap: () {
                       Navigator.pop(context);
+                      if (item == 'Absen') {
+                        Future.delayed(
+                          const Duration(milliseconds: 250),
+                          onAbsenTap,
+                        );
+                        return;
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Menu $item ditekan')),
                       );
@@ -188,11 +201,13 @@ class AttendanceDrawer extends StatelessWidget {
 class HomeContent extends StatefulWidget {
   final VoidCallback onMenuTap;
   final Function(int) onChangeTab;
+  final VoidCallback onAbsenTap;
 
   const HomeContent({
     super.key,
     required this.onMenuTap,
     required this.onChangeTab,
+    required this.onAbsenTap,
   });
 
   @override
@@ -450,7 +465,7 @@ class _HomeContentState extends State<HomeContent> {
                       _MenuItem(
                         icon: Icons.qr_code_scanner,
                         label: 'Absen',
-                        onTap: () => widget.onChangeTab(0),
+                        onTap: widget.onAbsenTap,
                       ),
                       _MenuItem(
                         icon: Icons.access_time,

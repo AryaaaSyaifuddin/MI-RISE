@@ -8,7 +8,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Data profil (nanti bisa dihubungkan dengan API/user session)
   String _name = 'Ahmad Fauzi';
   String _employeeId = 'EMP-2024-001';
   String _position = 'Senior Flutter Developer';
