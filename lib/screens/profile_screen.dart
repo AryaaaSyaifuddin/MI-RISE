@@ -15,7 +15,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _email = 'ahmad.fauzi@perusahaan.com';
   String _phone = '+62 812 3456 7890';
   String _joinDate = '1 Januari 2024';
-  bool _isDarkMode = false;
   bool _notificationsEnabled = true;
 
   @override
@@ -305,23 +304,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _notificationsEnabled = value;
-                              });
-                            },
-                            activeColor: const Color(0xFFB91A1A),
-                          ),
-                          onTap: () {},
-                        ),
-                        const Divider(height: 1, indent: 56, color: Color(0xFFE9ECEF)),
-                        _SettingsTile(
-                          icon: Icons.dark_mode_outlined,
-                          title: 'Mode Gelap',
-                          subtitle: 'Tampilan gelap untuk kenyamanan mata',
-                          trailing: Switch(
-                            value: _isDarkMode,
-                            onChanged: (value) {
-                              setState(() {
-                                _isDarkMode = value;
-                                // Implementasi mode gelap bisa ditambahkan nanti
                               });
                             },
                             activeColor: const Color(0xFFB91A1A),
