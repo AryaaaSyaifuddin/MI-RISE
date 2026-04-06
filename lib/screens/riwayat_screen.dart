@@ -27,78 +27,64 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
       'id': '1',
       'type': 'Absen Masuk',
       'title': 'Absen Masuk',
-      'subtitle': '',
       'time': '07:32',
       'date': '10 Apr 2026',
       'status': 'On Time',
-      'icon': Icons.login_rounded,
-      'iconColor': Colors.green,
+      'icon': Icons.login,
     },
     {
       'id': '2',
       'type': 'Absen Pulang',
       'title': 'Absen Pulang',
-      'subtitle': '',
       'time': '16:30',
       'date': '10 Apr 2026',
       'status': 'Tepat Waktu',
-      'icon': Icons.logout_rounded,
-      'iconColor': Colors.orange,
+      'icon': Icons.logout,
     },
     {
       'id': '3',
       'type': 'Cuti',
       'title': 'Cuti Tahunan',
-      'subtitle': '',
       'time': '09:15',
       'date': '7 Apr 2026',
       'status': 'Disetujui',
-      'icon': Icons.beach_access_rounded,
-      'iconColor': Colors.blue,
+      'icon': Icons.beach_access,
     },
     {
       'id': '4',
       'type': 'Lembur',
       'title': 'Lembur Project A',
-      'subtitle': '',
       'time': '20:00',
       'date': '6 Apr 2026',
       'status': 'Disetujui',
-      'icon': Icons.timer_rounded,
-      'iconColor': Colors.purple,
+      'icon': Icons.access_time,
     },
     {
       'id': '5',
       'type': 'Outpass',
       'title': 'Outpass Bank',
-      'subtitle': '',
       'time': '10:30',
       'date': '5 Apr 2026',
       'status': 'Disetujui',
-      'icon': Icons.exit_to_app_rounded,
-      'iconColor': Colors.teal,
+      'icon': Icons.exit_to_app,
     },
     {
       'id': '6',
       'type': 'Izin',
       'title': 'Izin',
-      'subtitle': '',
       'time': '13:00',
       'date': '4 Apr 2026',
       'status': 'Selesai',
-      'icon': Icons.business_center_rounded,
-      'iconColor': Colors.indigo,
+      'icon': Icons.business_center,
     },
     {
       'id': '7',
       'type': 'Dinas',
       'title': 'Training Jakarta',
-      'subtitle': '',
       'time': '08:00',
       'date': '3 Apr 2026',
       'status': 'Selesai',
-      'icon': Icons.work_rounded,
-      'iconColor': Colors.brown,
+      'icon': Icons.work_outline,
     },
   ];
 
@@ -114,9 +100,8 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
       }
       if (_searchQuery.isNotEmpty) {
         final title = activity['title'].toString().toLowerCase();
-        final subtitle = activity['subtitle'].toString().toLowerCase();
         final query = _searchQuery.toLowerCase();
-        if (!title.contains(query) && !subtitle.contains(query)) return false;
+        if (!title.contains(query)) return false;
       }
       return true;
     }).toList();
@@ -135,16 +120,16 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header sederhana
+            // Header (tetap sama, hanya disesuaikan sedikit)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Riwayat Aktivitas',
                         style: TextStyle(
                           fontSize: 20,
@@ -152,13 +137,13 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                           color: Color(0xFF1A1A1A),
                         ),
                       ),
-                      Image(
-                        image: AssetImage('assets/images/logo.png'),
+                      Image.asset(
+                        'assets/images/logo.png',
                         height: 38,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 1),
+                  const SizedBox(height: 2),
                   Text(
                     'Semua aktivitas Anda tersimpan di sini',
                     style: TextStyle(
@@ -167,7 +152,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Search bar terintegrasi
+                  // Search bar
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -185,7 +170,10 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                       onChanged: (v) => setState(() => _searchQuery = v),
                       decoration: InputDecoration(
                         hintText: 'Cari aktivitas',
-                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        hintStyle: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                        ),
                         prefixIcon: Icon(Icons.search, color: Colors.grey[500]),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
@@ -199,12 +187,12 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                               )
                             : null,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 8),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // Filter chip scroll horizontal
+                  const SizedBox(height: 13),
+                  // Filter chips
                   SizedBox(
                     height: 40,
                     child: ListView.separated(
@@ -218,6 +206,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                           label: Text(cat),
                           selected: isSelected,
                           onSelected: (s) => setState(() => _selectedCategory = cat),
+                          checkmarkColor: Colors.white,
                           backgroundColor: Colors.white,
                           selectedColor: const Color(0xFFB91A1A),
                           labelStyle: TextStyle(
@@ -236,7 +225,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            // List aktivitas
+            // List aktivitas dengan gaya compact seperti di main_screen
             Expanded(
               child: _filteredActivities.isEmpty
                   ? Center(
@@ -253,11 +242,11 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                       ),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       itemCount: _filteredActivities.length,
                       itemBuilder: (context, index) {
                         final item = _filteredActivities[index];
-                        return _ModernActivityCard(activity: item);
+                        return _CompactActivityCard(activity: item);
                       },
                     ),
             ),
@@ -268,151 +257,39 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
   }
 }
 
-// Card modern simple dengan efek minimalis
-class _ModernActivityCard extends StatelessWidget {
+// Widget item list yang compact, gaya sama dengan _RiwayatItem di main_screen.dart
+class _CompactActivityCard extends StatelessWidget {
   final Map<String, dynamic> activity;
 
-  const _ModernActivityCard({required this.activity});
+  const _CompactActivityCard({required this.activity});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                // Icon dengan background transparan
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        (activity['iconColor'] as Color).withOpacity(0.14),
-                        (activity['iconColor'] as Color).withOpacity(0.06),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: (activity['iconColor'] as Color).withOpacity(0.20),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    activity['icon'],
-                    color: activity['iconColor'],
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                // Konten utama
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        activity['title'],
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      if ((activity['subtitle'] as String).isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          activity['subtitle'],
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                      ] else
-                        const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today, size: 12, color: Colors.grey[500]),
-                          const SizedBox(width: 4),
-                          Text(
-                            activity['date'],
-                            style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                          ),
-                          const SizedBox(width: 12),
-                          Icon(Icons.access_time, size: 12, color: Colors.grey[500]),
-                          const SizedBox(width: 4),
-                          Text(
-                            activity['time'],
-                            style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Status badge minimalis
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(activity['status']).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    activity['status'],
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: _getStatusColor(activity['status']),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+    // Format subtitle: jam dan status
+    final subtitle = '${activity['time']} WIB • ${activity['status']}';
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 0,
+      color: Colors.grey.shade50,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        leading: CircleAvatar(
+          radius: 14,
+          backgroundColor: const Color(0xFFB91A1A).withOpacity(0.2),
+          child: Icon(activity['icon'], color: const Color(0xFFB91A1A), size: 14),
         ),
+        title: Text(
+          activity['title'],
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(fontSize: 12),
+        ),
+        trailing: const Icon(Icons.chevron_right, size: 16),
       ),
     );
   }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Disetujui':
-        return Colors.green;
-      case 'Terlambat':
-        return Colors.red;
-      case 'Selesai':
-        return Colors.blue;
-      case 'Tepat Waktu':
-        return Colors.teal;
-      default:
-        return Colors.orange;
-    }
-  }
 }
-

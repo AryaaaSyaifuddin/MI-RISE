@@ -8,6 +8,7 @@ import '../widgets/scan_bottom_sheet.dart';
 
 import 'menu_screen.dart';
 import 'riwayat_screen.dart';
+import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -64,6 +65,9 @@ class _MainScreenState extends State<MainScreen> {
     }
     if (selectedIndex == 2) {
       return const RiwayatScreen();
+    }
+    if (selectedIndex == 3) {
+      return const ProfileScreen();
     }
     return const Center(child: Text('Profile & Setting'));
   }
@@ -429,7 +433,7 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
                   // Menu Cepat (Grid 4 menu)
                   const Text(
                     'Menu Cepat',
@@ -465,7 +469,7 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 20),
                   // Riwayat Absensi
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

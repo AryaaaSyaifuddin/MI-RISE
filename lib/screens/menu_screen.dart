@@ -19,25 +19,28 @@ class MenuScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
-                children: [
-                  SizedBox(width: 48),
-                  Expanded(
-                    child: Center(
-                      child: Image(
-                        image: AssetImage('assets/images/logo.png'),
-                        height: 55,
+              const Padding(
+                padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                child: Row(
+                  children: [
+                    SizedBox(width: 48),
+                    Expanded(
+                      child: Center(
+                        child: Image(
+                          image: AssetImage('assets/images/logo.png'),
+                          height: 55,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 48),
-                ],
+                    SizedBox(width: 48),
+                  ],
+                ),
               ),
-              
+
               const SizedBox(height: 20),
               GridView.count(
                 crossAxisCount: 4,
